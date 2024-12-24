@@ -12,6 +12,13 @@
 - [Boolean](#boolean)
 - [Type Error](#type-error)
 - [Type Checking and Type Conversion](#type-checking-and-type-conversion)
+- [Number Manipulation](#number-manipulation)
+  - [Mathematically Operations](#mathematically-operations)
+  - [Augmented Assignment Operator](#augmented-assignment-operator)
+  - [Operation Precedence](#operation-precedence)
+  - [Rounding Numbers](#rounding-numbers)
+- [f-Strings](#f-strings)
+
 
 
 
