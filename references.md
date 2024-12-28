@@ -1,5 +1,43 @@
 # References
 
+## Conventions
+
+### General
+
+- **Indentation**: 4 spaces
+- **Naming Conventions**: 
+  - **Variables**: Lowercase with underscores (snake_case)
+  - **Functions**: Lowercase with underscores (snake_case)
+  - **Constants**: Uppercase with underscores (UPPER_CASE)
+  - **Classes**: CamelCase
+- **Line Length**: 79 characters per line.
+- **String Quotes**: Prefer single quotes over double quotes.
+
+### Comments and Docstrings
+
+- **Docstrings**: Use `""" """` for docstrings.
+- **Comments**: Use `#` for single-line comments and `""" """` for multi-line comments.
+- **Import Statements**: Each import should be on a new line.
+- **Type Annotations**: Use type hints for function arguments and return values.
+- **Blank Lines**: 
+  - Two blank lines between top-level definitions, such as functions and classes.
+
+### Whitespace
+
+- **Whitespace in Expressions and Statements**: 
+  - Avoid extraneous whitespace in the following situations:
+    - Immediately inside parentheses, brackets, or braces.
+    - Immediately before a comma, semicolon, or colon.
+    - Immediately before the open parenthesis that starts the argument list of a function call.
+  - In the following situations, always use a single space on both sides of a binary operator:
+    - Assignment (`=`), augmented assignment (`+=`, `-=` etc.), comparisons (`==`, `<`, `>`, `!=`, `<>`, `<=`, `>=`, `in`, `not in`, `is`, `is not`), Booleans (`and`, `or`, `not`).
+  - If operators with different priorities are used, consider adding whitespace around the operators with the lowest priority(ies). Use your own judgment; however, never use more than one space, and always have the same amount of whitespace on both sides of a binary operator.
+
+### Classes
+
+  - One blank line between method definitions inside a class.
+  - **Private Attributes and Methods**: Use a double underscore before a name to indicate it's private.
+
 ## Terminologies
 
 - **Syntax**: The rules that define how code should be written in a programming language.
