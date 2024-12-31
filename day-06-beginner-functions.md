@@ -71,8 +71,6 @@ def jump_hurdle():
 for i in range(6):
     jump_hurdle()
 ```
-
-
 ## Code Blocks and Indentation
 
 - Code blocks are an important concept in programming.
