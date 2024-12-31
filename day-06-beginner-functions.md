@@ -47,7 +47,6 @@ greet("Leon")
 ### Reeborg's World Challenge
 
 [Reeborg's World](https://reeborg.ca/reeborg.html?lang=en&mode=python&menu=worlds/menus/reeborg_intro_en.json&name=Hurdle%201&url=worlds/tutorial_en/hurdle1.json)
-
 ```python
 def turn_right():
     turn_left()
