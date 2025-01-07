@@ -23,33 +23,35 @@ def get_choice(options):
         str: The selected option.
     """
     if not options or not isinstance(options, list):
-        raise ValueError("Options must be a list with at least one item")
+        raise ValueError("Options must be a list with at least one item.")
 
     while True:
-        try:
-            print("What would you like?:")
-            for i, option in enumerate(options):
-                print(f"{i + 1}. {option}")
-            choice = input("Enter the number of your choice: ")
-            if choice in ["off", "report"]:
-                return choice
-            else:
-                choice = int(choice)
-                if 1 <= choice <= len(options):
-                    return options[choice - 1]
-                else:
-                    raise ValueError(
-                        "Invalid choice. Please enter a number corresponding to the options above."
-                    )
-        except ValueError as e:
-            print(e)
+        print("\nWhat would you like?:")
+        print("\n".join(f"{i + 1}. {option}" for i, option in enumerate(options)))
+        choice = input("Enter the number of your choice: ").strip()
+
+        if choice in ["off", "report"]:
+            return choice
+
+        if choice.isdigit() and 1 <= int(choice) <= len(options):
+            return options[int(choice) - 1]
+
+        print("Invalid choice. Please try again.")
 
 
+def neat_wrap(func):
+    def wrapper():
+        print("\n--------------------")
+        func()
+        print("--------------------\n")
+
+    return wrapper
+
+
+@neat_wrap
 def print_report():
-    print("\n--------------------")
     coffee_maker.report()
     money_machine.report()
-    print("--------------------\n")
 
 
 def coffee_machine():
@@ -71,6 +73,8 @@ def coffee_machine():
         else:
             print(choice)
             drink = menu.find_drink(choice)
+            if not drink:
+                continue
             if coffee_maker.is_resource_sufficient(
                 drink
             ) and money_machine.make_payment(drink.cost):
