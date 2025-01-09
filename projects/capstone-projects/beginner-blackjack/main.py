@@ -1,48 +1,50 @@
-"""
-Assignment game rules:
+"""Blackjack Game."""
 
-The deck is unlimited in size.
-There are no jokers.
-The Jack/Queen/King all count as 10.
-The Ace can count as 11 or 1.
-Use the following list as the deck of cards:
-cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
-
-The cards in the list have equal probability of being drawn.
-Cards are not removed from the deck as they are drawn.
-The computer is the dealer.
-"""
-
-import random
 import os
+import secrets
+
 from art import logo
 
 user_options = ["y", "n"]
 
 
-def clear():
-    """Clear the console screen"""
-    return os.system("cls" if os.name == "nt" else "clear")
+def clear() -> None:
+    """Clear the console screen."""
+    os.system("cls" if os.name == "nt" else "clear")  # nosec  # noqa: S605
 
 
-def deal_card(num_cards=1):
-    """Return a list of random cards. Accepts an optional argument to specify the number of cards to deal."""
+def deal_card(num_cards: int = 1) -> list[int]:
+    """Deal a hand of blackjack.
+
+    Args:
+        num_cards (int): The number of cards to return.
+
+    Returns:
+        list[int]: A list of cards.
+
+    """
     cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
     card_list = []
     for _ in range(num_cards):
-        card_list.append(random.choice(cards))
+        card_list.append(secrets.choice(cards))
     return card_list
 
 
-def check_blackjack(deck):
-    """Check if the deck is a blackjack hand"""
-    if sum(deck) == 21 and len(deck) == 2:
-        return True
-    else:
-        return False
+def check_blackjack(deck: list[int]) -> bool:
+    """Check if the deck is a blackjack hand.
+
+    Args:
+        deck (list[int]): A deck of cards as a list
+
+    Returns:
+        bool: The deck is a blackjack hand, true or false.
+
+    """
+    return sum(deck) == 21 and len(deck) == 2
 
 
-def display_winner(player_deck, dealer_deck):
+def display_winner(player_deck: list[int], dealer_deck: list[int]) -> None:
+    """Display the outcome of the game."""
     if check_blackjack(player_deck):
         print("You have Blackjack! You win!")
     elif check_blackjack(dealer_deck):
@@ -59,8 +61,16 @@ def display_winner(player_deck, dealer_deck):
         print("It's a draw!")
 
 
-def check_is_score_over(deck):
-    """Check if the deck is over 21"""
+def check_is_score_over(deck: list[int]) -> bool:
+    """Check if the deck is over 21.
+
+    Args:
+        deck (list[int]): A deck of cards.
+
+    Returns:
+        bool: The deck totals over 21, true or false.
+
+    """
     if sum(deck) > 21:
         if 11 in deck:
             deck[deck.index(11)] = 1
@@ -69,25 +79,50 @@ def check_is_score_over(deck):
     return False
 
 
-def validate_dealer_deck(dealer_deck):
-    """Validate the dealer's deck to ensure it has a score of at least 17"""
+def validate_dealer_deck(dealer_deck: (list[int])) -> None:
+    """Validate the dealer's deck to ensure it has a score of at least 17.
+
+    Args:
+        dealer_deck (list[int]): A list of the dealers cards.
+
+    """
     while sum(dealer_deck) < 17:
         dealer_deck.extend(deal_card(1))
 
 
-def validate_user_input(user_input, input_options):
-    """Validate the user's input to ensure it is one of the valid options. Accepts the user's input and a list of valid options."""
-    new_input = user_input
+def validate_user_input(user_input: str, input_options: list) -> str:
+    """Validate user input to ensure it matches one of the valid options.
+
+    Args:
+        user_input (str): The initial input provided by the user.
+        input_options (list[str]): A list of valid input options.
+
+    Returns:
+        str: The validated input, guaranteed to be one of the valid options.
+
+    Raises:
+        ValueError: If input_options is not a list of strings or user_input is not a string.
+
+    """
+    if not isinstance(user_input, str):
+        raise ValueError("user_input must be a string.")
+    if not isinstance(input_options, list) or not all(
+        isinstance(option, str) for option in input_options
+    ):
+        raise ValueError("input_options must be a list of strings.")
+
     input_options_str = ",".join(input_options)
-    while new_input not in input_options:
-        new_input = input(
+
+    validated_input = user_input
+    while validated_input not in input_options:
+        validated_input = input(
             f"Invalid input. Please try again. Valid inputs are {input_options_str}:\n"
         )
-    return new_input
+    return validated_input
 
 
-def start_game():
-    """Start a game of Blackjack"""
+def start_game() -> None:
+    """Start a game of Blackjack."""
     clear()
     print(logo)
     game_is_over = False
@@ -122,7 +157,8 @@ def start_game():
     check_should_start_game()
 
 
-def check_should_start_game():
+def check_should_start_game() -> None:
+    """Check if the user wants to play a game. Collects user response via input."""
     play_game = input(
         "Do you want to play a game of Blackjack? Type 'y' or 'n':\n"
     ).lower()
