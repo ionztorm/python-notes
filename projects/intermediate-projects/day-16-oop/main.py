@@ -1,7 +1,8 @@
-from menu import Menu, MenuItem
-from coffee_maker import CoffeeMaker
-from money_machine import MoneyMachine
 import os
+
+from coffee_maker import CoffeeMaker
+from menu import Menu
+from money_machine import MoneyMachine
 
 menu = Menu()
 money_machine = MoneyMachine()
@@ -13,8 +14,7 @@ def clear():
 
 
 def get_choice(options):
-    """
-    Displays a menu in the terminal and allows the user to select an option.
+    """Displays a menu in the terminal and allows the user to select an option.
 
     Args:
         options (list): A list of strings representing the options to choose from.
@@ -81,4 +81,5 @@ def coffee_machine():
                 coffee_maker.make_coffee(drink)
 
 
+coffee_machine()
 coffee_machine()
