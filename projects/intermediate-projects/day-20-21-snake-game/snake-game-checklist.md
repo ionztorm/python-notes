@@ -6,8 +6,9 @@
 
 **Day 21**
 
-- [ ] Food collision
-- [ ] Scoreboard
-- [ ] Collision with wall
-- [ ] Collision with tail
+- [x] Food collision
+- [x] Scoreboard
+- [x] Extend the snake
+- [x] Collision with wall
+- [x] Collision with tail
 

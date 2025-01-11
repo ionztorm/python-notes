@@ -23,12 +23,22 @@ class Snake:
     def create_snake(self) -> None:
         """Create a snake with 3segments."""
         for coordinate in SNAKE_STARTING_COORDINATES:
-            snake = t.Turtle("square")
-            snake.color("white")
-            snake.speed("slowest")
-            snake.penup()
-            snake.goto(coordinate)
-            self.segments.append(snake)
+            self.add_segment(coordinate)
+
+    def add_segment(self, position: tuple[int, int]) -> None:
+        """Add a new segment to the snake."""
+        snake = t.Turtle("square")
+        snake.color("white")
+        snake.speed("slowest")
+        snake.penup()
+        snake.goto(position)
+        self.segments.append(snake)
+
+
+    def extend(self) -> None:
+        """Extend the length of the snake by adding a new segment to the snake."""
+        self.add_segment(self.segments[-1].position())
+
 
     def move(self) -> None:
         """Move the snake."""
