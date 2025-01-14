@@ -2,4 +2,5 @@ DS_Store
 .DS_Store
 *venv*
 *venv_name*
-projects/intermediate-projects/day-20-21-snake-game/__pycache__
+__pycache__
+

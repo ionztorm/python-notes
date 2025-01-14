@@ -12,3 +12,7 @@
 - [x] Collision with wall
 - [x] Collision with tail
 
+**Day 24**
+
+- [x] Record and store high score
+
