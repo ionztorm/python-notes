@@ -8,6 +8,7 @@ def calc_km() -> None:
     """Convert miles to kilometers."""
     result = float(input_miles.get()) * 1.60934
     label_result.config(text=round(result,2))
+    input_miles.delete(0,tk.END)
 
 # =========[Window]==============
 
