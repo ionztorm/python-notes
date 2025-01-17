@@ -24,9 +24,9 @@ Exercise:
 doubled_list = [i * 2 for i in range(1,5)]
 # Output: [2, 4, 6, 8]
 ```
- 
- ### Conditionals in List Comprehension
- 
+
+### Conditionals in List Comprehension
+
  ```python
 # The standard way:
 
@@ -42,7 +42,7 @@ short_names = [name for name in names if len(name) < 5]
 # Output: ['Alex', 'Beth', 'Dave']
 ```
 
-#### Exercise:
+#### Exercise
 
 Create a list from the names, but make all the letters uppercase.
 
@@ -50,7 +50,7 @@ Create a list from the names, but make all the letters uppercase.
 upper_case_names =[name.upper() for name in names if len(name) > 5]
 ```
 
-#### Course Challenge 1:
+#### Course Challenge 1
 
 Square numbers:
 
@@ -120,7 +120,7 @@ print(student_scores)
 passed_students = {name: score for (name, score) in student_scores.items() if score >= 60}
 ```
 
-### Course Exercise 2:
+### Course Exercise 2
 
 ```python
 # letter count
