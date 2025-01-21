@@ -14,6 +14,11 @@ def copy(text: str) -> None:
     """Copy text to clipboard."""
     pyperclip.copy(text)
 
+def clear_inputs() -> None:
+    """Clear inputs."""
+    input_website.delete(0, tk.END)
+    input_email_user.delete(0, tk.END)
+    input_password.delete(0, tk.END)
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
@@ -41,11 +46,6 @@ def generate_password() -> None:
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 
-def clear_inputs() -> None:
-    """Clear inputs."""
-    input_website.delete(0, tk.END)
-    input_email_user.delete(0, tk.END)
-    input_password.delete(0, tk.END)
 
 def save_password() -> None:
     """Save password to file."""
