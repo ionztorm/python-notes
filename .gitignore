@@ -6,3 +6,4 @@ __pycache__
 
 projects/intermediate-projects/day-29-password-manager/passwords.txt
 intermediate/day-30-errors-exceptions-json/json.md
+*.env*
