@@ -32,7 +32,7 @@ NEWS_PARAMS = {
 
 def main() -> None:
     """Execute main."""
-    # stock_data = f.fetch(url=ALPHA_BASE_URL, params=ALPHA_BASE_PARAMS, timeout=5)
+    # stock_data = f.fetch(url=ALPHA_BASE_URL, params=ALPHA_BASE_PARAMS, timeout=5)  # noqa: ERA001
     stock_data = data
 
     comparison = sc.get_close_prices_comparison(stock_data)
