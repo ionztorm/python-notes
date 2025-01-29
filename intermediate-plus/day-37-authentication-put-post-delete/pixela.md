@@ -121,7 +121,6 @@ This also needs header verification:
 response = requests.post(url=pixel_endpoint, json=pixel_config, headers=headers, timeout=5)
 ```
 
-
 ## Update a record
 
 For this, we need to change the method to `put` and provide the date we want to update.

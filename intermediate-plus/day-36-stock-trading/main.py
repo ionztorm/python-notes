@@ -2,12 +2,10 @@
 
 import os
 
-from dotenv import load_dotenv
-
 import fetcher as f
 import stock_calculations as sc
-
 from data import data
+from dotenv import load_dotenv
 from emailer import send_email
 
 load_dotenv()
