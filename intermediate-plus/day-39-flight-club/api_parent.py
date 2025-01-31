@@ -20,11 +20,15 @@ class API:
     """API parent for utility fuction inheritance."""
 
     @staticmethod
-    def handle_request(api_call: Callable, **kwargs: Unpack[RequestKwargs]) -> dict[str, Any]:
+    def handle_request(
+        api_call: Callable, skip: bool = False, **kwargs: Unpack[RequestKwargs]
+    ) -> dict[str, Any]:
         """Execute an API request and handles any errors.
 
         Args:
             api_call (Callable): A function that performs an API request, for example, requsts.get.
+            skip (bool): Whether to skip error handling. Default is False. Used when you want to
+                handle errors manually.
             **kwargs: Keyword arguments to pass to the request function.
 
         Returns:
@@ -37,8 +41,13 @@ class API:
         """
         try:
             response = api_call(**kwargs)
-            # response.raise_for_status()
-            return response.json()
+            if not skip:
+                response.raise_for_status()
+            data = response.json()
+            if isinstance(data, list):
+                return data[0]
+
+            return data
 
         except requests.Timeout as e:
             raise requests.RequestException("Request timed out. Please try again.") from e

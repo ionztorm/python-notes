@@ -18,6 +18,7 @@ class Amadeus(API):
         self.domain = "https://test.api.amadeus.com"
         self.auth_token_endpoint = f"{self.domain}/v1/security/oauth2/token"
         self.cities_endpoint = f"{self.domain}/v1/reference-data/locations/cities"
+        self.country_code_endpoint = "https://restcountries.com/v3.1/name"
         self.client_id: str = os.getenv("AMADEUS_KEY", "")
         self.client_secret: str = os.getenv("AMADEUS_SECRET", "")
         self.bearer: str = self._get_auth_token()
@@ -62,14 +63,13 @@ class Amadeus(API):
         include: list[str] | None = None,
     ) -> str:
         """Retreive location data by city."""
-        # TODO: remove later.
-        country_code = "GB"
         parameters = {"keyword": city, "countryCode": country_code, "max": max, "include": include}
 
         token_expired = True
         while token_expired:
             response = self.handle_request(
                 requests.get,
+                skip=True,
                 url=self.cities_endpoint,
                 params=parameters,
                 headers=self.headers,
@@ -82,6 +82,7 @@ class Amadeus(API):
             else:
                 token_expired = False
 
+        print(response["data"][0]["iataCode"])
         return response["data"][0]["iataCode"]
 
     def get_country_code(self, country: str) -> str:
@@ -94,8 +95,13 @@ class Amadeus(API):
             str: The country code
 
         """
-        # TODO: finish.
-        return country
+        url = f"{self.country_code_endpoint}/{country}?fullText=true"
+        country_data = self.handle_request(requests.get, url=url, timeout=5)
+
+        if not country_data:
+            raise ValueError("Failed to retrieve country code.")
+
+        return country_data["cca2"]
 
     def get_flights(self) -> None:
         """Get flights for destination.

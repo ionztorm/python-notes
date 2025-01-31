@@ -54,13 +54,18 @@ class Sheety(API):
             timeout=self.timeout,
         )
 
-    def update(self, data: dict) -> dict:
+    def update(self, row: str, data: dict) -> dict:
         """Update data in a Google Sheet using the Sheety api.
 
         Args:
+            row: str: the row id to update.
             data: dict: a dictionary containing the new data.
 
         """
         return self.handle_request(
-            requests.put, url=self.endpoint, json=data, headers=self.headers, timeout=self.timeout
+            requests.put,
+            url=f"{self.endpoint}/{row}",
+            json=data,
+            headers=self.headers,
+            timeout=self.timeout,
         )
