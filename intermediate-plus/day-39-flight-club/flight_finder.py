@@ -5,8 +5,6 @@ This module contains the FlightFinder class providing methods to search for flig
 Public Methods:
     notify_users: Notify users of flight deals.
 
-Private Methodes:
-
 """
 
 import datetime as dt
@@ -133,20 +131,16 @@ class FlightFinder:
         message = f"\n{num_deals} flights from {from_code} to {to_code}\n\n"
 
         for idx, deal in enumerate(data, start=1):
-            # Extract deal details
             last_ticket_time = deal["lastTicketingDateTime"]
             total_cost = deal["price"]["grandTotal"]
             num_seats = deal["numberOfBookableSeats"]
 
-            # Extract first itinerary (since we're assuming one itinerary per deal)
             itinerary = deal["itineraries"][0]
-            segments = itinerary["segments"]  # List of segments
+            segments = itinerary["segments"]
 
-            # Extract first and last segment for overall journey
             first_segment = segments[0]
             last_segment = segments[-1]
 
-            # Get departure & arrival details
             departure_time = first_segment["departure"]["at"]
             arrival_time = last_segment["arrival"]["at"]
 
@@ -158,11 +152,9 @@ class FlightFinder:
             arrival_date = arr_dt.strftime("%Y-%m-%d")
             arrival_time = arr_dt.strftime("%H:%M")
 
-            # Count stops (segments between first and last)
-            stop_count = len(segments) - 1  # Stops = Segments - 1
+            stop_count = len(segments) - 1
 
             if stop_count == 0:
-                # Direct flight (1 segment)
                 message += (
                     f"👉 Deal {idx}\n\n"
                     f"🛫 departs on {leave_date} at {leave_time}\n"
@@ -173,7 +165,6 @@ class FlightFinder:
                     f"there are only {num_seats} seats left.\n\n"
                 )
             else:
-                # Connecting flight iata codes
                 stop_airports = [segment["arrival"]["iataCode"] for segment in segments[:-1]]
 
                 message += (
