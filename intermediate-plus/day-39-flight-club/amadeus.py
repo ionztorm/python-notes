@@ -1,12 +1,25 @@
 """Amadeus flight controller."""
 
 import os
+from typing import TypedDict, Unpack
 
 import requests
 from api_parent import API
 from dotenv import load_dotenv, set_key
 
 load_dotenv()
+
+
+class FlightSearch(TypedDict):
+    """Kwarg types for flight search."""
+
+    origin: str
+    destination: str
+    departure_date: str
+    adults: int
+    max_offers: int
+    max_price: int
+    currency: str
 
 
 class Amadeus(API):
@@ -19,6 +32,7 @@ class Amadeus(API):
         self.auth_token_endpoint = f"{self.domain}/v1/security/oauth2/token"
         self.cities_endpoint = f"{self.domain}/v1/reference-data/locations/cities"
         self.country_code_endpoint = "https://restcountries.com/v3.1/name"
+        self.flight_offers_endpoint = f"{self.domain}/v2/shopping/flight-offers"
         self.client_id: str = os.getenv("AMADEUS_KEY", "")
         self.client_secret: str = os.getenv("AMADEUS_SECRET", "")
         self.bearer: str = self._get_auth_token()
@@ -103,14 +117,41 @@ class Amadeus(API):
 
         return country_data["cca2"]
 
-    def get_flights(self) -> None:
+    def get_flights(self, **kwargs: Unpack[FlightSearch]) -> list:
         """Get flights for destination.
 
         Args:
-            args...
+            kwargs (Unpack[FlightSearch]): Flight search parameters.
+            Accepts origin, destination, departure_date, adults, max_offers, max_price, currency.
 
         Returns:
             list[str]: flights
 
         """
-        pass
+        parameters = {
+            "originLocationCode": kwargs["origin"],
+            "destinationLocationCode": kwargs["destination"],
+            "departureDate": kwargs["departure_date"],
+            "adults": kwargs["adults"],
+            "currencyCode": kwargs["currency"],
+            "max": kwargs["max_offers"],
+            "maxPrice": kwargs["max_price"],
+        }
+
+        token_expired = True
+        while token_expired:
+            response = self.handle_request(
+                requests.get,
+                skip=True,
+                url=f"{self.domain}/v2/shopping/flight-offers",
+                params=parameters,
+                headers=self.headers,
+                timeout=60,
+            )
+
+            if "errors" in response and response["errors"][0]["status"] == 401:
+                print("Token expired, refreshing.")
+                self._get_auth_token(refresh=True)
+            else:
+                token_expired = False
+        return response["data"]
