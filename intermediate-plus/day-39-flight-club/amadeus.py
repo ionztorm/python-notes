@@ -1,4 +1,13 @@
-"""Amadeus flight controller."""
+"""Amadeus flight controller.
+
+This module contains the Amadeus class for handling flight data requests.
+
+Methods:
+    get_iata_code: Get the IATA code for a city.
+    get_country_code: Get the country code for a country.
+    get_flights: Get flight data for a destination.
+
+"""
 
 import os
 from typing import TypedDict, Unpack
@@ -39,7 +48,15 @@ class Amadeus(API):
         self.headers = {"Authorization": f"Bearer {self.bearer}"}
 
     def _get_auth_token(self, refresh: bool = False) -> str:
-        """Get the Amadeus auth token."""
+        """Get the Amadeus auth token.
+
+        Args:
+            refresh (bool): Whether to refresh the token.
+
+        Returns:
+            str: The bearer token.
+
+        """
         token = os.getenv("AMADEUS_BEARER_TOKEN", "")
 
         if not refresh:
@@ -76,7 +93,18 @@ class Amadeus(API):
         max: int | None = None,
         include: list[str] | None = None,
     ) -> str:
-        """Retreive location data by city."""
+        """Retreive location data by city.
+
+        Args:
+            city (str): The city name.
+            country_code (str): The country code.
+            max (int): The maximum number of results to return.
+            include (list[str]): The data to include in the response.
+
+        Returns:
+            str: The IATA code for the city.
+
+        """
         parameters = {"keyword": city, "countryCode": country_code, "max": max, "include": include}
 
         token_expired = True

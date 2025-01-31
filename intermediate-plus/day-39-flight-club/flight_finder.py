@@ -1,7 +1,12 @@
 """Flight finder.
 
-Accepts a list of destinations and finds the cheapest flights to each destination.
-Updates Google Sheet with iata and country codes if not present.
+This module contains the FlightFinder class providing methods to search for flight deals.
+
+Public Methods:
+    notify_users: Notify users of flight deals.
+
+Private Methodes:
+
 """
 
 import datetime as dt
@@ -16,16 +21,29 @@ class FlightFinder:
 
     def __init__(self) -> None:
         """Construct an instance of FlightFinder."""
-        self.sheety = Sheety(project_name="flightDeals", sheet_name="prices")
+        self.sheety = Sheety(project_name="flightDeals")
         self.amadeus = Amadeus()
         self.mailer = Mailer()
-        self.sheet_data = self.sheety.read()["prices"]
+        self.destination_data = self.sheety.read("prices")["prices"]
+        self.user_data = self.sheety.read("users")["users"]
         self.sanitised_data = []
 
-    def sanitise_data(self) -> None:
+    def notify_users(self) -> None:
+        """Issue flight notifications to users."""
+        self._sanitise_data()
+        self._flight_search()
+        mailing_list = []
+        for user in self.user_data:
+            mailing_list.append(
+                {"name": user["whatIsYourFirstName?"], "email": user["whatIsYourEmailAddress?"]}
+            )
+        self.mailer._send_mail(recipients=mailing_list, message=self.mailer.message)
+
+    def _sanitise_data(self) -> None:
         """Run the flight search."""
+        print("--------------------------")
         print("Sanitising data...")
-        for destination in self.sheet_data:
+        for destination in self.destination_data:
             require_update = False
             city = destination["city"]
             country = destination["country"]
@@ -34,7 +52,6 @@ class FlightFinder:
             lowest_price = destination["lowestPrice"]
             id = destination["id"]
 
-            print("--------------------------")
             print(f">>> Sanitising {city}, {country}")
 
             # if no country code, get country code
@@ -62,7 +79,7 @@ class FlightFinder:
                     }
                 }
                 print(">>> Updating sheet...")
-                self.sheety.update(row=id, data=new_data)
+                self.sheety.update(row=id, data=new_data, sheet="prices")
                 print("<<< Sheet updated.")
 
             self.sanitised_data.append(
@@ -75,21 +92,19 @@ class FlightFinder:
                     "id": id,
                 }
             )
+        print("<<< Data sanitised.")
 
-    def flight_search(self) -> None:
+    def _flight_search(self) -> None:
         """Run the flight search."""
-        print("Searching for flights...")
+        print("--------------------------")
+        print("🧐 Looking for flights 🕵️‍♂️...")
         for destination in self.sanitised_data:
             city = destination["city"]
             country_code = destination["country_code"]
             lowest_price = destination["lowest_price"]
             iata_code = destination["iata_code"]
 
-            print("--------------------------")
-            print(
-                f">>> Searching for flights to {city}, {country_code},"
-                f" with a lowest price of {lowest_price}"
-            )
+            print(f">>> to {city}, {country_code}, with a maximum price of {lowest_price}")
             offers = self.amadeus.get_flights(
                 origin="LPL",
                 destination=iata_code,
@@ -101,30 +116,21 @@ class FlightFinder:
             )
 
             if len(offers):
-                self.format_flight_deals(data=offers, from_code="LPL", to_code=iata_code)
-                # self.mailer.send_email(
-                #     subject=f"Flight deals to {city}, {country_code}",
-                #     message=self.format_flight_deals(data=offers, from_code="LPL", to_code=iata_code),
-                # )
+                print(f"<<< Search complete: {len(offers)} offers found.")
+                self._format_flight_deals(data=offers, from_code="LPL", to_code=iata_code)
+        print(self.mailer.message)
 
-    def format_flight_deals(self, data: list, from_code: str, to_code: str) -> None:
-        """Format a message containing flight deals.
+    def _format_flight_deals(self, data: list, from_code: str, to_code: str) -> None:
+        """Format a message containing flight deals, handling direct and stopover flights.
 
         Args:
             data (list): List of flight offers (extracted from the API response).
-            from_code (str): Origin airport code.
-            to_code (str): Destination airport code.
-
-        Returns:
-            Formatted message string.
+            from_code (str): Departure airport code.
+            to_code (str): Arrival airport code.
 
         """
         num_deals = len(data)
-
-        message = (
-            f"We found {num_deals} deals for your preferred flight "
-            f"from {from_code} to {to_code}:\n\n"
-        )
+        message = f"\n{num_deals} flights from {from_code} to {to_code}\n\n"
 
         for idx, deal in enumerate(data, start=1):
             # Extract deal details
@@ -132,31 +138,53 @@ class FlightFinder:
             total_cost = deal["price"]["grandTotal"]
             num_seats = deal["numberOfBookableSeats"]
 
-            # Extract flight segment (assuming only one itinerary and one segment)
+            # Extract first itinerary (since we're assuming one itinerary per deal)
             itinerary = deal["itineraries"][0]
-            segment = itinerary["segments"][0]
+            segments = itinerary["segments"]  # List of segments
 
-            departure_time = segment["departure"]["at"]
-            arrival_time = segment["arrival"]["at"]
+            # Extract first and last segment for overall journey
+            first_segment = segments[0]
+            last_segment = segments[-1]
 
-            # Formatting date and time from ISO 8601 to readable format
-            from datetime import datetime
+            # Get departure & arrival details
+            departure_time = first_segment["departure"]["at"]
+            arrival_time = last_segment["arrival"]["at"]
 
-            dep_dt = datetime.fromisoformat(departure_time)
-            arr_dt = datetime.fromisoformat(arrival_time)
+            dep_dt = dt.datetime.fromisoformat(departure_time)
+            arr_dt = dt.datetime.fromisoformat(arrival_time)
 
             leave_date = dep_dt.strftime("%Y-%m-%d")
             leave_time = dep_dt.strftime("%H:%M")
             arrival_date = arr_dt.strftime("%Y-%m-%d")
             arrival_time = arr_dt.strftime("%H:%M")
 
-            # Append to the message
-            message += (
-                f"Deal {idx} departs on {leave_date} at {leave_time} "
-                f"and arrives on {arrival_date} at {arrival_time}. "
-                f"This has a total cost of £{total_cost}. This offer ends on {last_ticket_time} - "
-                f"there are {num_seats} seats available.\n\n"
-            )
+            # Count stops (segments between first and last)
+            stop_count = len(segments) - 1  # Stops = Segments - 1
 
-        print(message)
-        # return message.strip()
+            if stop_count == 0:
+                # Direct flight (1 segment)
+                message += (
+                    f"👉 Deal {idx}\n\n"
+                    f"🛫 departs on {leave_date} at {leave_time}\n"
+                    f"🛬 arrives on {arrival_date} at {arrival_time}.\n"
+                    f"🚀 Direct! No stops for you!\n"
+                    f"💷 The price is £{total_cost}.\n"
+                    f"⏰ This offer ends on {last_ticket_time} - "
+                    f"there are only {num_seats} seats left.\n\n"
+                )
+            else:
+                # Connecting flight iata codes
+                stop_airports = [segment["arrival"]["iataCode"] for segment in segments[:-1]]
+
+                message += (
+                    f"👉 Deal {idx}\n\n"
+                    f"🛫 departs on {leave_date} at {leave_time}\n"
+                    f"🛬 arrives on {arrival_date} at {arrival_time}.\n"
+                    f"🛑 It has {stop_count} stop{'s' if stop_count > 1 else ''} "
+                    f"along the way at {', '.join(stop_airports)}. \n"
+                    f"💷 The price is £{total_cost}.\n"
+                    f"⏰ This offer ends on {last_ticket_time} - "
+                    f"there are {num_seats} seats left.\n\n"
+                )
+
+        self.mailer.message += message

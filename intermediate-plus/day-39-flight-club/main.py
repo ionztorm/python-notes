@@ -11,8 +11,7 @@ flights = FlightFinder()
 
 def main() -> None:
     """Execute program."""
-    flights.sanitise_data()
-    flights.flight_search()
+    flights.notify_users()
 
 
 main()

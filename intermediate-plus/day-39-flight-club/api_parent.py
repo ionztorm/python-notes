@@ -1,4 +1,11 @@
-"""Parent class for API inheritanec."""
+"""Parent class for API inheritance.
+
+This class provides a method to handle API requests and errors.
+
+Methods:
+    handle_request: Execute an API request and handle any errors.
+
+"""
 
 from typing import Any, Callable, NotRequired, TypedDict, Unpack
 
