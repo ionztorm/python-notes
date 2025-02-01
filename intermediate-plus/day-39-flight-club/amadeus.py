@@ -13,8 +13,9 @@ import os
 from typing import TypedDict, Unpack
 
 import requests
-from api_parent import API
 from dotenv import load_dotenv, set_key
+
+from api_parent import API
 
 load_dotenv()
 
@@ -59,9 +60,8 @@ class Amadeus(API):
         """
         token = os.getenv("AMADEUS_BEARER_TOKEN", "")
 
-        if not refresh:
-            if token:
-                return token
+        if not refresh and token:
+            return token
 
         data = {
             "grant_type": "client_credentials",
