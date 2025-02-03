@@ -6,3 +6,4 @@ __pycache__
 *.env*
 
 intermediate/day-30-errors-exceptions-json/json.md
+intermediate-plus-web/day-46-spotify/.cache
