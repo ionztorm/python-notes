@@ -18,7 +18,9 @@ def get_tracks() -> tuple[list[str], str]:
 
     empire_top_100_url = f"https://www.billboard.com/charts/hot-100/{user_input}/"
     header = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0"
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0"
+        )
     }
 
     blender = Blender()
