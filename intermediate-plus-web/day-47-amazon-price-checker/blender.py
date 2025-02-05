@@ -35,4 +35,6 @@ class Blender:
             list[str]: List of extracted attribute values.
 
         """
-        return [el.get(attribute, "") for el in soup.select(selector) if el.has_attr(attribute)]
+        return [
+            el.get(attribute, "") or "" for el in soup.select(selector) if el.has_attr(attribute)
+        ]

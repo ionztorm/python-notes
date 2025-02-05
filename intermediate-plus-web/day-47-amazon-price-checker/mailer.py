@@ -9,7 +9,7 @@ import smtplib as e
 
 from dotenv import load_dotenv
 
-load_dotenv()
+_ = load_dotenv()
 
 
 class Mailer:
@@ -17,11 +17,11 @@ class Mailer:
 
     def __init__(self) -> None:
         """Construct an instance of the mailer class."""
-        self.email = os.getenv("EMAIL_SENDER")
-        self.recipient = os.getenv("EMAIL_RECIPIENT")
-        self.password = os.getenv("EMAIL_PASSWORD")
-        self.server = e.SMTP("smtp.gmail.com")
-        self.message = ""
+        self.email: str | None = os.getenv("EMAIL_SENDER", "")
+        self.recipient: str | None = os.getenv("EMAIL_RECIPIENT", "")
+        self.password: str | None = os.getenv("EMAIL_PASSWORD", "")
+        self.server: e.SMTP = e.SMTP("smtp.gmail.com")
+        self.message: str = ""
 
     def send_mail(self, price: str) -> None:
         """Send an email notification.
@@ -38,9 +38,9 @@ class Mailer:
         )
 
         with self.server as connection:
-            connection.starttls()
-            connection.login(user=self.email, password=self.password)
-            connection.sendmail(
+            _ = connection.starttls()
+            _ = connection.login(user=self.email, password=self.password)
+            _ = connection.sendmail(
                 from_addr=self.email, to_addrs=self.recipient, msg=body.encode("utf-8")
             )
             print(">>> Emails sent successfully 📮")
